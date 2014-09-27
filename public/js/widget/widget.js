@@ -152,7 +152,7 @@ define(function (require, exports, module) {
             /**
              * @description 在当前父元素下查找子元素,并且对已选中的dom对象进行了缓存
              * @param {String} selector - 选择器
-             * @param {Bool} cache 是否缓存以及是否清楚对应缓存
+             * @param {Bool} cache 清除缓存,此时不会返回元素
              */
             $: function (selector,cache) {
                 cache === undefined && (cache = true);
@@ -162,10 +162,11 @@ define(function (require, exports, module) {
                 }
                 if(!cache && selectorStore[selector]){
                     (delete selectorStore[selector]) || (selectorStore[selector]=null);
+                    return;
                 }
                 var ele = this.element;
                 var finded = ele.find(selector);
-                cache && (selectorStore[selector] = finded);
+                selectorStore[selector] = finded;
                 return finded;
             },
             /**
