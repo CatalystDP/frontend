@@ -44,7 +44,7 @@ define(function (require, exports, module) {
                     events: null,
                     attrs: {}
                 };
-                option = $.extend(defaultOption, option);
+                option = option ? $.extend(defaultOption, option) : defaultOption;
                 _init.call(this, option);
                 this._stamp();
             },
@@ -152,15 +152,20 @@ define(function (require, exports, module) {
             /**
              * @description 在当前父元素下查找子元素,并且对已选中的dom对象进行了缓存
              * @param {String} selector - 选择器
+             * @param {Bool} cache 是否缓存以及是否清楚对应缓存
              */
-            $: function (selector) {
+            $: function (selector,cache) {
+                cache === undefined && (cache = true);
                 var selectorStore = this.selectorStore || (this.selectorStore = {});
-                if (selectorStore[selector]) {
+                if (cache && selectorStore[selector]) {
                     return selectorStore[selector];
+                }
+                if(!cache && selectorStore[selector]){
+                    (delete selectorStore[selector]) || (selectorStore[selector]=null);
                 }
                 var ele = this.element;
                 var finded = ele.find(selector);
-                selectorStore[selector] = finded;
+                cache && (selectorStore[selector] = finded);
                 return finded;
             },
             /**
@@ -184,7 +189,7 @@ define(function (require, exports, module) {
                     if (self.hasOwnProperty(key)) {
                         index = $.inArray(key, whiteList);
                         index == -1 && (self[key] = null);
-                        index == 1 && (op[key] = value);
+                        index != -1 && (op[key] = value);
                     }
                 });
                 options = $.extend(op, options);
